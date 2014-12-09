@@ -7,17 +7,21 @@ import no.computas.computasdag.helper.Quotes;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
-public class CombiningFuturesApp extends App {
-    public CombiningFuturesApp() {
+public class TransformFuturesApp extends App {
+    public TransformFuturesApp() {
         CompletableFuture<List<MovieCharacter>> characters = CompletableFuture.supplyAsync(
                 () -> characterService.getCharacters());
         CompletableFuture<String> quote = CompletableFuture.supplyAsync(
                 () -> Quotes.getRandomQuote());
-        characters.thenAcceptBoth(quote,
-                (chars, q) -> System.out.println(combine(chars, q))).join();
+
+        System.out.println(
+            characters
+                    .thenCombine(quote, (c, q) -> combine(c, q))
+                    .join());
+
     }
 
     public static void main(String[] args) {
-        new CombiningFuturesApp();
+        new TransformFuturesApp();
     }
 }
